@@ -6,31 +6,47 @@ import os
 import requests
 
 # URLs to Hugging Face
-MODEL_URL = "https://huggingface.co/2bhavyasodhi7/rnn_toxicity/resolve/main/toxic_comment_rnn.h5"
+MODEL_URL = "https://huggingface.co/2bhavyasodhi7/rnn_toxicity/resolve/main/toxicity.h5"
 VECTORIZER_URL = "https://huggingface.co/2bhavyasodhi7/rnn_toxicity/resolve/main/vectorizer.pkl"
 
-MODEL_PATH = "toxic_comment_rnn.h5"
+MODEL_PATH = "toxicity.h5"
 VECTORIZER_PATH = "vectorizer.pkl"
 
-# Download function
+# Download function with caching
+@st.cache_resource(show_spinner=False)
 def download_file(url, filename):
     if not os.path.exists(filename):
         with st.spinner(f"Downloading {filename}..."):
-            response = requests.get(url, stream=True)
-            with open(filename, "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-        st.success(f"{filename} downloaded successfully!")
+            headers = {"User-Agent": "Mozilla/5.0"}
+            response = requests.get(url, headers=headers, stream=True)
 
-# Download model and vectorizer
-download_file(MODEL_URL, MODEL_PATH)
-download_file(VECTORIZER_URL, VECTORIZER_PATH)
+            if response.status_code == 200:
+                with open(filename, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                st.success(f"{filename} downloaded successfully!")
+            else:
+                st.error(f"Failed to download {filename}. Status code: {response.status_code}")
+    return filename
 
-# Load the model and vectorizer
-model = tf.keras.models.load_model(MODEL_PATH)
-with open(VECTORIZER_PATH, "rb") as f:
-    vectorizer = pickle.load(f)
+# Cached loading of model and vectorizer
+@st.cache_resource(show_spinner="Loading model...")
+def load_model():
+    model_file = download_file(MODEL_URL, MODEL_PATH)
+    model = tf.keras.models.load_model(model_file)
+    return model
+
+@st.cache_resource(show_spinner="Loading vectorizer...")
+def load_vectorizer():
+    vectorizer_file = download_file(VECTORIZER_URL, VECTORIZER_PATH)
+    with open(vectorizer_file, "rb") as f:
+        vectorizer = pickle.load(f)
+    return vectorizer
+
+# Load model and vectorizer
+model = load_model()
+vectorizer = load_vectorizer()
 
 # Define labels
 labels = ['Toxic', 'Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity Hate']
@@ -61,11 +77,11 @@ if st.button("Predict"):
         # Display predictions
         st.subheader("🧩 Prediction Probabilities:")
         for label, prob in zip(labels, prediction):
-            st.write(f"{label}:** {prob * 100:.2f}%")
+            st.write(f"{label}: {prob * 100:.2f}%")
             st.progress(int(prob * 100))
-            
+
         top_label = labels[np.argmax(prediction)]
-        st.success(f"🧩 Most likely category: *{top_label}*")
+        st.success(f"🧩 Most likely category: {top_label}")
 
 # About section
 st.markdown("""

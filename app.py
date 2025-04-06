@@ -1,60 +1,58 @@
 import streamlit as st
 import requests
 import numpy as np
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tempfile
-import os
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
 
-# Hugging Face model URL (.h5 file only)
-HUGGINGFACE_MODEL_URL = "https://huggingface.co/spaces/2bhavyasodhi7/transformer_comment_toxicity/resolve/main/tf_model.h5"
+# Replace this with the correct model URL from your Hugging Face *Model Repository*
+HUGGINGFACE_MODEL_URL = "https://huggingface.co/your-username/your-model-repo/resolve/main/tf_model.h5"
 
-# Constants
-MAX_LEN = 200  # Must match training config
-VOCAB_SIZE = 10000  # Must match training config
+# A simple tokenizer as a placeholder
+tokenizer = Tokenizer(num_words=10000, oov_token="<OOV>")
+# Fit on dummy data to avoid errors — in real cases, this must be the **same tokenizer** used during training
+dummy_texts = ["example", "toxic", "clean", "not toxic"]
+tokenizer.fit_on_texts(dummy_texts)
+
+MAX_LEN = 100  # Replace with actual max length used during model training
 
 @st.cache_resource
 def load_model_from_huggingface():
     model_file = tempfile.NamedTemporaryFile(delete=False, suffix=".h5")
-    model_file.write(requests.get(HUGGINGFACE_MODEL_URL).content)
+
+    response = requests.get(HUGGINGFACE_MODEL_URL, headers={"User-Agent": "Mozilla/5.0"})
+    if response.status_code != 200:
+        raise ValueError("Failed to download model file. Check the URL.")
+
+    model_file.write(response.content)
     model_file.close()
+
     return load_model(model_file.name)
 
-@st.cache_resource
-def create_default_tokenizer():
-    # WARNING: This will NOT produce accurate predictions unless your model was trained with same tokenizer
-    tokenizer = Tokenizer(num_words=VOCAB_SIZE, oov_token="<OOV>")
-    # Placeholder fit on dummy data just to make it usable — you MUST use the original tokenizer for real accuracy
-    tokenizer.fit_on_texts(["This is a placeholder fit."])
-    return tokenizer
-
-# Load model and tokenizer
+# Load model
 model = load_model_from_huggingface()
-tokenizer = create_default_tokenizer()
 
-# Streamlit UI
+# Streamlit App UI
 st.set_page_config(page_title="Toxic Comment Checker", layout="centered")
 st.title("🧪 Toxic Comment Detection")
 st.write("Enter a comment below and check if it's toxic.")
 
 user_input = st.text_area("Type your comment here...")
 
-if st.button("Check Toxicity"):
+if st.button("Check for Toxicity"):
     if user_input.strip() == "":
-        st.warning("Please enter a comment first.")
+        st.warning("Please enter a comment.")
     else:
-        # Preprocess input
+        # Tokenize and pad input
         sequence = tokenizer.texts_to_sequences([user_input])
-        padded = pad_sequences(sequence, maxlen=MAX_LEN, padding="post", truncating="post")
+        padded = pad_sequences(sequence, maxlen=MAX_LEN, padding='post', truncating='post')
 
         # Predict
-        prediction = model.predict(padded)[0][0]
+        prediction = model.predict(padded)[0][0]  # Adjust indexing if needed
 
-        # Show result
-        st.subheader("Prediction")
-        st.write(f"Toxicity Score: `{prediction:.4f}`")
+        st.write("### Result:")
         if prediction > 0.5:
-            st.error("⚠️ This comment is likely **toxic**.")
+            st.error(f"🚨 Toxic Comment Detected! (Score: {prediction:.2f})")
         else:
-            st.success("✅ This comment is **not toxic**.")
+            st.success(f"✅ Comment seems safe. (Score: {prediction:.2f})")

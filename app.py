@@ -2,6 +2,10 @@ import streamlit as st
 import numpy as np
 import tensorflow as tf
 import pickle
+import os
+
+# 🛠 Ensure Git LFS files are pulled (important for Streamlit Cloud!)
+os.system('git lfs pull')
 
 # Paths to local files
 MODEL_PATH = "toxicity.h5"

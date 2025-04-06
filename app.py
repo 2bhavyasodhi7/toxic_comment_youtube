@@ -7,7 +7,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
 # Replace this with the correct model URL from your Hugging Face *Model Repository*
-HUGGINGFACE_MODEL_URL = "https://huggingface.co/your-username/your-model-repo/resolve/main/tf_model.h5"
+HUGGINGFACE_MODEL_URL = "https://huggingface.co/2bhavyasodhi7/transformer_toxicity/resolve/main/tf_model.h5"
 
 # A simple tokenizer as a placeholder
 tokenizer = Tokenizer(num_words=10000, oov_token="<OOV>")

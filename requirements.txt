@@ -3,7 +3,7 @@ numpy==2.0.2
 pandas==2.2.2
 scikit-learn==1.6.1
 scipy==1.14.1
-
+h5py==3.8.0
 # TensorFlow and related libraries
 tensorflow==2.19.0
 tensorflow-text==2.19.0

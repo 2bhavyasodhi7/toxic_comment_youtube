@@ -2,7 +2,7 @@ streamlit
 tensorflow
 numpy
 matplotlib
-hugging face
+
 
 
 

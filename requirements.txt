@@ -1,19 +1,55 @@
-streamlit
-tensorflow
-numpy
-pandas
-scikit-learn
-matplotlib
-seaborn
-textblob
-nltk
-spacy
-joblib
-wordcloud
-altair
-transformers
-torch
-sentencepiece
-emoji
-spacytextblob
-en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+# Core Libraries
+numpy==2.0.2
+pandas==2.2.2
+scikit-learn==1.6.1
+scipy==1.14.1
+
+# TensorFlow and related libraries
+tensorflow==2.19.0
+tensorflow-text==2.19.0
+tensorflow-hub==0.13.0
+
+# Transformers for NLP
+transformers==4.50.3
+tokenizers==0.21.1
+
+# Flask for API
+flask==2.3.3
+
+# NLTK for text preprocessing
+nltk==3.9.1
+
+# Joblib for model serialization
+joblib==1.4.2
+
+# Requests for API calls
+requests==2.32.3
+
+# Streamlit for the web app interface
+streamlit==1.44.1
+
+# Visualization libraries
+matplotlib==3.10.0
+seaborn==0.13.2
+altair==5.5.0
+
+# Additional utilities
+protobuf>=4.21,<5  # Compatible with TensorFlow and Streamlit.
+cryptography>=42  # Updated version for compatibility.
+blinker>=1.8  # Updated version.
+cffi>=1.17  # Updated for compatibility.
+beautifulsoup4==4.13.3  # For HTML parsing if needed.
+charset-normalizer==3.4.1  # For encoding detection.
+anyio==4.9.0  # Async I/O library.
+
+# Google APIs (if using YouTube Data API)
+google-api-python-client==2.94.0
+google-auth==2.38.0
+google-auth-oauthlib==1.2.1
+
+# FastAPI (if switching to FastAPI framework)
+fastapi==0.100.0
+
+# Optional dependencies (based on context)
+markdown-it-py==3.0  # Markdown rendering for Streamlit.
+plotly==5.24  # Interactive plots.

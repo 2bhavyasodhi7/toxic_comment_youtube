@@ -1,17 +1,11 @@
-# Core Libraries
-numpy==2.0.2
-pandas==2.2.2
-scikit-learn==1.6.1
-scipy==1.14.1
+streamlit
+tensorflow
+numpy
+matplotlib
+hugging face
 
-# TensorFlow and related libraries
-tensorflow==2.19.0
-# tensorflow-text==2.19.0 # Commented out - BERT specific, likely not needed for RNN
-# tensorflow-hub==0.13.0 # Commented out - BERT specific, likely not needed for RNN
 
-# Transformers for NLP (If needed for tokenization beyond the vectorizer)
-# transformers==4.50.3 # Commented out - Likely not needed if using the pickled vectorizer
-# tokenizers==0.21.1 # Commented out
+
 
 # NLTK for text preprocessing (if used in app.py)
 nltk==3.9.1
